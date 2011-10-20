@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+require "terasound/echoprint"
+
+p TeraSound.codegen ARGV[0]
