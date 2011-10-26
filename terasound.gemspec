@@ -12,6 +12,8 @@ Gem::Specification.new do |s|
   s.require_paths    = ["lib"]
   s.rubygems_version = %q{1.3.7}
   s.add_dependency "json"
+  s.add_dependency "ripple", "~>0.9.5"
+  s.add_dependency "em-http-request", "1.0.0"
   s.add_development_dependency "minitest", "~>2.0"
   s.add_development_dependency "rake"
 end
