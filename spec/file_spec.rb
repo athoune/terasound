@@ -1,11 +1,11 @@
 require "minitest/autorun"
-require "terasound/file"
+require "terasound/riak"
 
 describe "Terasound" do
   it "puts mp3 to the server" do
-    f = Terasound::File.new
+    f = Terasound::Riak.new
     EM.run do
-      p = f.put("spec/test.mp3", "terasound3", {beuha: "aussi"})
+      p = f.upload_file("spec/test.mp3", "terasound3", "audio/mpeg", {beuha: "aussi"})
       p.callback do
         puts p.response_header
         puts p.response
