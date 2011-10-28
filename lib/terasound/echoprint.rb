@@ -2,8 +2,11 @@ require "json"
 
 module TeraSound
 
-  def TeraSound.codegen path
-    JSON.parse `find #{path} -name "*.mp3" | echoprint-codegen -s 10 30`
+  # Parse a folder and extract mp3 data
+  def TeraSound.codegen path, &block
+    Dir["#{path}/**/*.mp3"].each do |mp3|
+      yield JSON.parse(`echoprint-codegen "#{mp3}" 10 30`)[0]
+    end
   end
 
 end

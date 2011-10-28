@@ -2,4 +2,6 @@
 
 require "terasound/echoprint"
 
-p TeraSound.codegen ARGV[0]
+TeraSound.codegen(ARGV[0]) do |mp3|
+  p mp3
+end
