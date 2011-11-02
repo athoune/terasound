@@ -16,24 +16,47 @@ module Terasound
       )
     end
 
-    def upload_file(filepath, bucket, contentType, metadata={})
-      head = {"Content-Type" => contentType}
-      metadata.map do |k, v|
-        #head["X-Riak-Index-#{k}"] = v
-        head["X-Riak-Meta-#{k}"] = v
-      end
-      req = @conn.post(
+    def upload_code(code, bucket)
+      head = {"Content-Type" => "text/plain"}
+      @conn.post(
         path: "/riak/#{bucket}",
         keepalive: true,
-        file: filepath,
+        body: code,
         head: head
       )
-      req.errback do
-        puts "argh, can't upload", req
-        puts req.response_header
-        puts req.response
-       end
-      req
+    end
+
+    def upload_file(filepath, bucket, contentType, metadata={}, &block)
+      code = upload_code(metadata['code'], bucket)
+
+      code.callback do
+        if code.response_header.status == 201
+          key = code.response_header['LOCATION'].split('/')[3..-1].join('/')
+          head = {
+            "Content-Type" => contentType,
+            "link" => "</#{key}>; riaktag=\"code\""
+          }
+          metadata.map do |k, v|
+            #head["X-Riak-Index-#{k}"] = v
+            head["X-Riak-Meta-#{k}"] = v.to_s if v != nil and v != ""
+          end
+          req = @conn.post(
+            path: "/riak/#{bucket}",
+            keepalive: true,
+            file: filepath,
+            head: head
+          )
+          req.errback do
+            puts "argh, can't upload", req
+            puts req.response_header
+            puts req.response_header.status
+            puts req.response
+          end
+          req.callback do
+            yield block
+          end
+        end
+      end
     end
 
   end
